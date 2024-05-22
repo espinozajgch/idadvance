@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,23 +18,22 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
 public class UserEntity {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue
     private UUID id;
     private String name;
+    @Column(unique = true)
     private String email;
     private String password;
+    @CreationTimestamp
     private LocalDate created;
+    @UpdateTimestamp
     private LocalDate modified;
     private LocalDate lastLogin;
     private String token;
     private boolean isActive;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PhoneEntity> phones;
 }

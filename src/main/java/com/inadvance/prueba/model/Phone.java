@@ -12,12 +12,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "phones")
 public class PhoneEntity {
+
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
     private String number;
     private String citycode;
