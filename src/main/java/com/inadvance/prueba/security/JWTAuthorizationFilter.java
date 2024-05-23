@@ -1,4 +1,4 @@
-package com.espinozajg.jwt.security;
+package com.inadvance.prueba.security;
 
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.espinozajg.jwt.security.Constans.*;
+import static com.inadvance.prueba.security.Constans.*;
 
 @Component
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
@@ -25,7 +25,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 				getHeader(HEADER_AUTHORIZACION_KEY).
 				replace(TOKEN_BEARER_PREFIX, "");
 
-		return Jwts.parserBuilder()
+		return Jwts.parser()
 				.setSigningKey(getSigningKey(SUPER_SECRET_KEY))
 				.build()
 				.parseClaimsJws(jwtToken)

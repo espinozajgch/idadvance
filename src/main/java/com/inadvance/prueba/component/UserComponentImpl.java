@@ -2,10 +2,11 @@ package com.inadvance.prueba.component;
 
 import com.inadvance.prueba.dto.UserDto;
 import com.inadvance.prueba.exception.NotFoundException;
-import com.inadvance.prueba.mapper.PhoneMapper;
+import com.inadvance.prueba.exception.ValidationException;
 import com.inadvance.prueba.mapper.UserMapper;
-import com.inadvance.prueba.model.UserEntity;
+import com.inadvance.prueba.model.User;
 import com.inadvance.prueba.repository.UserRepository;
+import com.inadvance.prueba.security.JWTAuthtenticationConfig;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.inadvance.prueba.util.UserHelper.generateToken;
 
 @Component
 public class UserComponentImpl implements UserComponent {
@@ -27,28 +26,24 @@ public class UserComponentImpl implements UserComponent {
     private UserMapper userMapper;
 
     @Autowired
-    private PhoneMapper phoneMapper;
+    JWTAuthtenticationConfig jwtAuthtenticationConfig;
 
     @Override
     public UserDto save(UserDto userDto) {
 
-        Optional<UserEntity> user = userRepository.findByEmail(userDto.getEmail());
+        Optional<User> user = userRepository.findByEmail(userDto.getEmail());
         if (user.isPresent()) {
-            throw new NotFoundException("Ya existe un usuario registrado con el mail: " + userDto.getEmail());
+            throw new ValidationException("El correo ya esta registrado: " + userDto.getEmail());
         }
 
-        UserEntity userEntity = userMapper.userDtoToUserEntity(userDto);
+        User userEntity = userMapper.userDtoToUserEntity(userDto);
 
         LocalDate now = LocalDate.now();
         userEntity.setCreated(now);
         userEntity.setModified(now);
         userEntity.setLastLogin(now);
-        userEntity.setToken(generateToken());
+        userEntity.setToken(jwtAuthtenticationConfig.getJWTToken(userDto.getName()));
         userEntity.setActive(true);
-
-        userEntity.getPhones().forEach(phonedbo -> {
-            phonedbo.setUser(userEntity);
-        });
 
         userRepository.save(userEntity);
 
@@ -57,9 +52,9 @@ public class UserComponentImpl implements UserComponent {
 
     @Override
     public List<UserDto> getAllUsers() {
-        List<UserEntity> userEntityList = userRepository.findAll();
+        List<User> userList = userRepository.findAll();
 
-        return userEntityList
+        return userList
                 .stream()
                 .map(user -> userMapper.userEntityToUserDto(user))
                 .collect(Collectors.toList());
@@ -68,15 +63,15 @@ public class UserComponentImpl implements UserComponent {
     @Override
     public UserDto updateUser(UserDto userRequestDto) {
 
-        Optional<UserEntity> user = userRepository.findByEmail(userRequestDto.getEmail());
+        Optional<User> user = userRepository.findByEmail(userRequestDto.getEmail());
         if (user.isPresent()) {
-            UserEntity userEntity = userMapper.userDtoToUserEntity(userRequestDto);
+            User userEntity = userMapper.userDtoToUserEntity(userRequestDto);
 
             LocalDate now = LocalDate.now();
             userEntity.setCreated(user.get().getCreated());
             userEntity.setModified(now);
             userEntity.setLastLogin(now);
-            userEntity.setToken(generateToken());
+            userEntity.setToken(jwtAuthtenticationConfig.getJWTToken(userRequestDto.getName()));
             userRepository.save(userEntity);
             return userMapper.userEntityToUserDto(userEntity);
         } else {
@@ -86,7 +81,7 @@ public class UserComponentImpl implements UserComponent {
 
     @Override
     public UserDto getUserByEmail(String email) {
-        Optional<UserEntity> userEntity = userRepository.findByEmail(email);
+        Optional<User> userEntity = userRepository.findByEmail(email);
         if (userEntity.isPresent()) {
             return userMapper.userEntityToUserDto(userEntity.get());
         } else {
@@ -97,7 +92,7 @@ public class UserComponentImpl implements UserComponent {
     @Override
     @Transactional
     public void deleteUser(String email) {
-        Optional<UserEntity> userEntity = userRepository.findByEmail(email);
+        Optional<User> userEntity = userRepository.findByEmail(email);
         if (userEntity.isPresent()) {;
             userRepository.delete(userEntity.get());
         } else {

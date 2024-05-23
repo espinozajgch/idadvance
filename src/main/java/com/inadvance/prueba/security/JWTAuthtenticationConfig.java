@@ -1,4 +1,4 @@
-package com.espinozajg.jwt.security;
+package com.inadvance.prueba.security;
 
 
 import io.jsonwebtoken.Jwts;
@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.espinozajg.jwt.security.Constans.*;
+import static com.inadvance.prueba.security.Constans.*;
 
 
 @Configuration
@@ -23,7 +23,7 @@ public class JWTAuthtenticationConfig {
 
         String token = Jwts
                 .builder()
-                .setId("espinozajgeJWT")
+                .setId("inadvanceJWT")
                 .setSubject(username)
                 .claim("authorities",
                         grantedAuthorities.stream()

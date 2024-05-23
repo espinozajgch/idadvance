@@ -23,4 +23,10 @@ public class UserDto {
     private LocalDate lastLogin;
     private String token;
     private boolean isActive;
+
+    public UserDto(String name, String password, String token){
+        this.name = name;
+        this.password = password;
+        this.token = token;
+    }
 }

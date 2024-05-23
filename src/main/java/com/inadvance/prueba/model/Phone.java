@@ -1,27 +1,24 @@
 package com.inadvance.prueba.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class PhoneEntity {
+public class Phone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+    private Long id;
+
     private String number;
     private String citycode;
     private String contrycode;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
 }
