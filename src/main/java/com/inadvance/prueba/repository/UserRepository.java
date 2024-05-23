@@ -1,12 +1,12 @@
 package com.inadvance.prueba.repository;
 
-import com.inadvance.prueba.model.UserEntity;
+import com.inadvance.prueba.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<UserEntity, UUID> {
-    Optional<UserEntity> findByEmail(String email);
+public interface UserRepository extends JpaRepository<User, UUID> {
+    Optional<User> findByEmail(String email);
 
 }
